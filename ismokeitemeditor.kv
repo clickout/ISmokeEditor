@@ -1,0 +1,89 @@
+#: import main interface
+#: import ListItemButton kivy.uix.listview.ListItemButton
+#: import ListAdapter kivy.adapters.listadapter.ListAdapter
+
+<MyListItemButton@ListItemButton>:
+    color: 0, 0, 0, 1
+    halign: 'left'
+    text_size: self.size
+    size_hint_y: None
+    height: 5
+    background_normal: ""
+    background_color: 1, 1, 1, 1
+    deselected_color: 1, 1, 1, 1
+    selected_color: 0.5, 0.5, 0.5, 1
+
+
+<ISmokeLayout>:
+    id: ISmokeItemEditor
+    rows: 5
+    padding: 10
+    spacing: 10
+    search_text_input: search
+    items_scroll_view: items
+    amount_text_input: amount
+    console: console
+
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+
+    Image:
+        source: 'logo.png'
+        allow_stretch: False
+        size_hint_y: None
+        height: 100
+
+    BoxLayout:
+        size_hint_y: None
+        height: 30
+        Label:
+            text: "Najit: "
+            color: 0, 0, 0, 1
+            size_hint_x: None
+            width: 60
+        TextInput:
+            id: search
+            multiline: False
+            cursor_color: 0.5, 0.5, 0.5, 1
+            on_text: root.search_list()
+
+
+    ScrollView:
+        do_scroll_x: False
+        ListView:
+            id: items
+            adapter:
+                ListAdapter(data=[], cls='MyListItemButton')
+
+    BoxLayout:
+        spacing: 10
+        size_hint_y: None
+        height: 30
+        Label:
+            text: 'Mnozstvi: '
+            color: [0, 0, 0, 1]
+            size_hint_x: None
+            width: 60
+        TextInput:
+            multiline: False
+            id: amount
+            input_filter: 'int'
+            cursor_color: 0.5, 0.5, 0.5, 1
+        Button:
+            text: 'Pridat'
+            on_press: root.add_item()
+        Button:
+            text: 'Prodat'
+            on_press: root.sell_item()
+
+    TextInput:
+        id: console
+        size_hint_y: None
+        readonly: True
+        cursor_color: 0.5, 0.5, 0.5, 1
+        font_size: 10
