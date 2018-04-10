@@ -10,7 +10,6 @@ from difflib import get_close_matches
 import items
 
 
-
 class ISmokeLayout(GridLayout):
     Window.size = (300, 600)
     items_scroll_view = ObjectProperty()
@@ -36,11 +35,20 @@ class ISmokeLayout(GridLayout):
             item_name = unidecode(self.items_scroll_view.adapter.selection[0].text.lower())
             selected_item = self.all_items_dict.get(item_name)
             if self.amount_text_input.text:
-                selected_item.sell(int(self.amount_text_input.text))
-                self.console.text += str(selected_item) + " - prodáno {} položek.\n".format(self.amount_text_input.text)
+                try:
+                    selected_item.sell(int(self.amount_text_input.text))
+                except ValueError as error:
+                    self.console.text += error.args[0] + '({})'.format(str(selected_item))
+                else:
+                    self.console.text += str(selected_item) + \
+                                         " - prodáno {} položek.\n".format(self.amount_text_input.text)
             else:
-                selected_item.sell()
-                self.console.text += str(selected_item) + " - prodána 1 položka.\n"
+                try:
+                    selected_item.sell()
+                except ValueError as error:
+                    self.console.text += error.args[0] + '({})'.format(str(selected_item))
+                else:
+                    self.console.text += str(selected_item) + " - prodána 1 položka.\n"
 
     def search_list(self):
         if self.search_text_input.text:

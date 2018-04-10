@@ -57,13 +57,12 @@ class Item(object):
     def sell(self, number_of_sold_items=1):
         spreadsheet = self.open_spreadsheet()
         worksheet = spreadsheet.get_worksheet(self.index_of_worksheet)
-        if self.quantity <= 0:
-            return "Zbozi je jiz vyprodané."
+        if self.quantity - number_of_sold_items < 0:
+            raise ValueError('Na sklade neni dostatek zbozi.')
         else:
             self.quantity -= number_of_sold_items
             worksheet.update_cell(self.row, 4, self.quantity)
             self.update_history_of_changes(-number_of_sold_items, worksheet)
-        return str(self) + " - prodáno položek: " + str(number_of_sold_items)
 
     def add(self, number_of_added_items=1):
         self.quantity += number_of_added_items
@@ -71,7 +70,6 @@ class Item(object):
         worksheet = spreadsheet.get_worksheet(self.index_of_worksheet)
         worksheet.update_cell(self.row, 4, self.quantity)
         self.update_history_of_changes(number_of_added_items, worksheet)
-        return str(self) + " - přidano polozek: " + str(number_of_added_items)
 
     def update_history_of_changes(self, change, worksheet):
         index_of_last_nonempty_col = len(worksheet.row_values(1))
