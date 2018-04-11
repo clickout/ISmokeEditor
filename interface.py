@@ -23,32 +23,21 @@ class ISmokeLayout(GridLayout):
         if self.items_scroll_view.adapter.selection:
             item_name = unidecode(self.items_scroll_view.adapter.selection[0].text.lower())
             selected_item = self.all_items_dict.get(item_name)
-            if self.amount_text_input.text:
-                selected_item.add(int(self.amount_text_input.text))
-                self.console.text += str(selected_item) + " - přidáno {} položek.\n".format(self.amount_text_input.text)
-            else:
-                selected_item.add()
-                self.console.text += str(selected_item) + " - přidána 1 položka.\n"
+            amount = int(self.amount_text_input.text) if self.amount_text_input.text else 1
+            selected_item.add(amount)
+            self.console.text += str(selected_item) + " - přidáno {} položek.\n".format(amount)
 
     def sell_item(self):
         if self.items_scroll_view.adapter.selection:
             item_name = unidecode(self.items_scroll_view.adapter.selection[0].text.lower())
             selected_item = self.all_items_dict.get(item_name)
-            if self.amount_text_input.text:
-                try:
-                    selected_item.sell(int(self.amount_text_input.text))
-                except ValueError as error:
-                    self.console.text += error.args[0] + '({})'.format(str(selected_item))
-                else:
-                    self.console.text += str(selected_item) + \
-                                         " - prodáno {} položek.\n".format(self.amount_text_input.text)
+            amount = int(self.amount_text_input.text) if self.amount_text_input.text else 1
+            try:
+                selected_item.sell(amount)
+            except ValueError as error:
+                self.console.text += error.args[0] + '({})'.format(str(selected_item))
             else:
-                try:
-                    selected_item.sell()
-                except ValueError as error:
-                    self.console.text += error.args[0] + '({})'.format(str(selected_item))
-                else:
-                    self.console.text += str(selected_item) + " - prodána 1 položka.\n"
+                self.console.text += str(selected_item) + " - prodáno {} položek.\n".format(amount)
 
     def search_list(self):
         if self.search_text_input.text:
