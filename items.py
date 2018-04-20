@@ -1,8 +1,8 @@
-"""This module reads spreadsheet with products from shop and defines their properties
+"""This module reads a spreadsheet of products from shop and defines their properties
 
 Is based on our custom spreasheed with a given format.
 
-Every line of sheet corresponds to one product which will be saved as instanse ouf our defined class Item.
+Every line of sheet corresponds to one product which will be saved as instance ouf our defined class Item.
 With these atributes and methods we can creat various features in final app. Such as selling/adding products, or
 exporting all missing products from stock to a list etc... 
 """
@@ -61,7 +61,7 @@ class Item(object):
                                                              self.row, self.index_of_worksheet)
 
     def __str__(self):
-        return "{} - price: {},- Kč, bonus {},- Kč, quantity: {}.".format(self.name, self.price, self.bonus,
+        return "{} - price: {},- Czk, bonus {},- Czk, quantity: {}.".format(self.name, self.price, self.bonus,
                                                                             self.quantity)
 
     def sell(self, number_of_sold_items=1):
