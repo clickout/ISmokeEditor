@@ -1,3 +1,11 @@
+"""This module reads spreadsheet with products from shop and defines their properties
+
+Is based on our custom spreasheed with a given format.
+
+Every line of sheet corresponds to one product which will be saved as instanse ouf our defined class Item.
+With these atributes and methods we can creat various features in final app. Such as selling/adding products, or
+exporting all missing products from stock to a list etc... 
+"""
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -7,8 +15,10 @@ import unidecode
 
 
 class Item(object):
-
-    @staticmethod
+   """
+   
+   """
+   @staticmethod
     def open_spreadsheet():
         scope = ['https://spreadsheets.google.com/feeds']
         credentials = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
