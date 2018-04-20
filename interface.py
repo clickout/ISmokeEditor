@@ -25,7 +25,7 @@ class ISmokeLayout(GridLayout):
             selected_item = self.all_items_dict.get(item_name)
             amount = int(self.amount_text_input.text) if self.amount_text_input.text else 1
             selected_item.add(amount)
-            self.console.text += str(selected_item) + " - přidáno {} položek.\n".format(amount)
+            self.console.text += str(selected_item) + " - {} items added.\n".format(amount)
 
     def sell_item(self):
         if self.items_scroll_view.adapter.selection:
@@ -37,7 +37,7 @@ class ISmokeLayout(GridLayout):
             except ValueError as error:
                 self.console.text += error.args[0] + '({})'.format(str(selected_item))
             else:
-                self.console.text += str(selected_item) + " - prodáno {} položek.\n".format(amount)
+                self.console.text += str(selected_item) + " - {} items sold.\n".format(amount)
 
     def search_list(self):
         if self.search_text_input.text:
