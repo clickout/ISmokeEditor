@@ -61,14 +61,14 @@ class Item(object):
                                                              self.row, self.index_of_worksheet)
 
     def __str__(self):
-        return "{} - cena: {},- Kč, provize: {},- Kč, množství: {}.".format(self.name, self.price, self.bonus,
+        return "{} - price: {},- Kč, bonus {},- Kč, quantity: {}.".format(self.name, self.price, self.bonus,
                                                                             self.quantity)
 
     def sell(self, number_of_sold_items=1):
         spreadsheet = self.open_spreadsheet()
         worksheet = spreadsheet.get_worksheet(self.index_of_worksheet)
         if self.quantity - number_of_sold_items < 0:
-            raise ValueError('Na sklade neni dostatek zbozi.')
+            raise ValueError("There aren't enough items in stock.")
         else:
             self.quantity -= number_of_sold_items
             worksheet.update_cell(self.row, 4, self.quantity)
