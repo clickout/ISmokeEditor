@@ -1,10 +1,10 @@
-"""This module reads a spreadsheet of products from shop and defines their properties
+"""This module reads a spreadsheet of products from shop and defines their properties.
 
-Is based on our custom spreasheed with a given format.
+Everything is based on our custom spreasheed with a given format.
 
 Every line of sheet corresponds to one product which will be saved as instance ouf our defined class Item.
-With these atributes and methods we can creat various features in final app. Such as selling/adding products, or
-exporting all missing products from stock to a list etc... 
+With these atributes and methods we can create various features in the final app. Such as selling/adding products, or
+exporting all missing products from stock to a list etc...
 """
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -15,11 +15,17 @@ import unidecode
 
 
 class Item(object):
-   """
+   """Every instance of this class will correspond to one product from our spreadsheet.
    
+   This spreadsheet is made from multiple sheets, with diffrent kind of products. Every sheet is in the same format.
+   Name of the product is in the first column, second - prices of one piece, third - bonus for salesman, forth is the amount
+   of items in stock.
+   
+   Reading and writing to these sheets is done by Google Spreadsheet API(gspread)
    """
    @staticmethod
     def open_spreadsheet():
+        """This method returns opened spreadsheet as instance of class defined by gspread"""
         scope = ['https://spreadsheets.google.com/feeds']
         credentials = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
         gspread_creds = gspread.authorize(credentials)
@@ -28,18 +34,24 @@ class Item(object):
 
     @classmethod
     def get_all_items(cls):
+        """Reads all sheets and returns dictionary of all products.
+        
+        Key is name of product in lowercase and with no special charcaters for easier accesing.
+        The value of every key is a instance of this class.
+        """
         spreadsheet = cls.open_spreadsheet()
         all_items = {}
-        for index, worksheet in enumerate(spreadsheet.worksheets()):
-            items = worksheet.range(2, 1, worksheet.row_count, 4)
-            for x in range(0, len(items), 4):
-                if items[x + 3].value:
-                    all_items[unidecode.unidecode(items[x].value).lower()] = cls.get_item_from_list(items[x:x + 4],
-                                                                                                    index)
+        for index, worksheet in enumerate(spreadsheet.worksheets()): # Works for any number of sheets in spreadsheet.
+            whole_list_of_cells = worksheet.range(2, 1, worksheet.row_count, 4) # First row has only titles of colmuns so its not included.
+            for x in range(0, len(whole_list_of_cells), 4):
+                if whole_list_of_cells[x + 3].value: # This avoids empty rows
+                    all_items[unidecode.unidecode(whole_list_of_cells[x].value).lower()] = 
+                    cls.get_item_from_list(whole_list_of_cells[x:x + 4], index)
         return all_items
 
     @classmethod
     def get_item_from_list(cls, list_of_cells, index_of_worksheet):
+        """A custom constructor which returns instance of this class from row of 4 cells used by get_all_items clsmethod"""
         name = list_of_cells[0].value
         price = list_of_cells[1].value
         bonus = list_of_cells[2].value
@@ -65,6 +77,11 @@ class Item(object):
                                                                             self.quantity)
 
     def sell(self, number_of_sold_items=1):
+        """Method used when we sell a product.
+        
+        Updates the amount of items in stock(quantity) of the particular product and writes updated amount to the sheet.
+        Also records when and how much we sold to the sheet to the rightmost column.
+        """
         spreadsheet = self.open_spreadsheet()
         worksheet = spreadsheet.get_worksheet(self.index_of_worksheet)
         if self.quantity - number_of_sold_items < 0:
@@ -75,6 +92,7 @@ class Item(object):
             self.update_history_of_changes(-number_of_sold_items, worksheet)
 
     def add(self, number_of_added_items=1):
+        """Method used when we add a items of product to stock. See docstring of method sell for additional info"""
         self.quantity += number_of_added_items
         spreadsheet = self.open_spreadsheet()
         worksheet = spreadsheet.get_worksheet(self.index_of_worksheet)
@@ -82,6 +100,11 @@ class Item(object):
         self.update_history_of_changes(number_of_added_items, worksheet)
 
     def update_history_of_changes(self, change, worksheet):
+        """Records the changes made to the amount of items at stock in one day.
+        
+        Creats a new column with current date at first cell. And below the changes to corresponding products.
+        This change can be modified throughout the day, but only the final change will be stored at the end of the day.
+        """
         index_of_last_nonempty_col = len(worksheet.row_values(1))
         current_date = "{}.{}.".format(date.today().day, date.today().month)
         if worksheet.cell(1, index_of_last_nonempty_col).value != current_date:
@@ -95,6 +118,7 @@ class Item(object):
 
 
 def get_digit_from_str(string):
+    """Function which filters out mistakes made in sheet."""
     number = ""
     for letter in string:
         if letter.isdigit():
